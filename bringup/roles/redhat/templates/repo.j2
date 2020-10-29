@@ -1,0 +1,20 @@
+[base]
+name=base yum repository
+baseurl=ftp://{{ repouser | urlencode }}:{{ repoencd }}@{{ repohost }}/redhat/yum/{{ repotype }}/{{ repovers }}/{{ repovers }}{{ repotype | capitalize }}/{{ repoarch }}/os/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+[supplementary]
+name=supplementary yum repository
+baseurl=ftp://{{ repouser | urlencode }}:{{ repoencd }}@{{ repohost }}/redhat/yum/{{ repotype }}/{{ repovers }}/{{ repovers }}{{ repotype | capitalize }}/{{ repoarch }}/supplementary/os/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+[optional]
+name=optional yum repository
+baseurl=ftp://{{ repouser | urlencode }}:{{ repoencd }}@{{ repohost }}/redhat/yum/{{ repotype }}/{{ repovers }}/{{ repovers }}{{ repotype | capitalize }}/{{ repoarch }}/optional/os/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+[extras]
+name=extras yum repository
+baseurl=ftp://{{ repouser | urlencode }}:{{ repoencd }}@{{ repohost }}/redhat/yum/{{ repotype }}/{{ repovers }}/{{ repovers }}{{ repotype | capitalize }}/{{ repoarch }}/extras/os/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+[rh-common]
+name=rh-common yum repository
+baseurl=ftp://{{ repouser | urlencode }}:{{ repoencd }}@{{ repohost }}/redhat/yum/{{ repotype }}/{{ repovers }}/{{ repovers }}{{ repotype | capitalize }}/{{ repoarch }}/rh-common/os/
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release

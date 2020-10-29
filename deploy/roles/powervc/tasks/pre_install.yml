@@ -1,0 +1,79 @@
+---
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Author: TBD
+#---
+
+  - name: Simple command (ping).
+    ping:
+    tags:
+      - precheck-ping-hosts
+
+  - name: Check if ansible_play_hosts == ansible_play_hosts_all (means UNREACHABLE hosts detected)
+    run_once: True
+    assert:
+      that:
+        - ansible_play_hosts == ansible_play_hosts_all
+    tags:
+      - precheck-reachable-hosts
+
+  - name: Check for a supported Operating System
+    run_once: True
+    assert: 
+      that:
+        - (ansible_os_family == 'RedHat' and ansible_distribution_major_version == '7')  and
+          (ansible_distribution_major_version == '7' and ansible_distribution_version in ['7.6', '7.7'])
+      msg: "The only supported platforms for this release are RedHat 7.6 , RedHat 7.7"
+    tags:
+       - precheck-os
+
+  - name: Check for for single host or host supported for HA
+    run_once: True
+    assert:
+      that:
+        - true or ({{ ansible_play_hosts | length }} >= 1 or {{ ansible_play_hosts | length }} == 1) and
+          ( {{ ansible_play_hosts | length }} % 2 == 1 )
+      msg: "Number of Controller hosts is not valid for recommended HA configuration. Number of Hosts: {{ ansible_play_hosts | length }}, Hosts: {{ ansible_play_hosts }}"
+    tags:
+      - precheck-ha
+
+  - name: check if file/folder exists
+    stat:
+      path: "{{ item }}"
+    register: check_file
+    with_items:
+      - ['/opt/ibm/powervc/bin', '/opt/ibm/powervc/version.properties', '/opt/ibm/powervc/bin/powervc-services']
+
+  - name: Set check files result
+    set_fact:
+      store_check_file: "{{ check_file.results | map(attribute='stat.exists') | list }}"
+
+  - name: Set backup result
+    set_fact:
+      is_installed: "{{ false  if false in store_check_file else true }}"
+
+  - name: Check for hosts if PVC is installer
+    fail:
+      msg: "PowerVC is already installed or in-progres in {{ inventory_hostname }}."
+    when: is_installed == true
+
+  - name: installs prereq packages
+    package:
+      name: "{{ powervc_pre_packages }}"
+      state: present
+    register: install_prereq
+    until: install_prereq is success
+    retries: 5
+    delay: 2
+    when: is_installed == false
+

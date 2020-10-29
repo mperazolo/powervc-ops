@@ -1,0 +1,136 @@
+---
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Author: TBD
+#---
+
+#   - name: get the fqdn from DNS
+#     shell: "nslookup {{ inventory_hostname }} | grep -i name| awk 'NF>1{print $NF}' | sed 's/\\.$//'"
+#     register: fqdn_hostname
+
+#   - debug: msg="hostname dns = {{ fqdn_hostname }}"
+
+#   - name: get the hostname
+#     shell: "hostname"
+#     register: pre_hostname
+
+#   - name: Configure the hostname
+#     hostname:
+#       name="{{ fqdn_hostname.stdout }}"
+#     when: pre_hostname.stdout != fqdn_hostname.stdout
+
+#   - debug: msg: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ fqdn_hostname.stdout }}"
+
+#   - name: Update the /etc/hosts file with node name
+#     tags: etchostsupdate
+#     lineinfile:
+#       path: "/etc/hosts"
+#       regexp: "{{ hostvars[item]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}\t{{ hostvars[item]['ansible_nodename']}}\t{{ hostvars[item]['ansible_hostname']}}"
+#       line: "{{ hostvars[item]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}\t{{ hostvars[item]['ansible_nodename']}}\t{{ hostvars[item]['ansible_hostname']}}"
+#       state: present
+#       backup: yes
+#     register: etchostsupdate
+#     with_items: "{{groups['controller']}}"
+
+#   - debug: msg="{{ hostvars[item]['ansible_env'] }}"
+
+   - name: Configure Env variables
+     shell: "echo 'export HOST_INTERFACE={{ ansible_default_ipv4.interface }}'"
+     register: envvar
+   
+   - name: create project directory 
+     file: 
+       state=directory 
+       path=/root/pvcinstall
+
+   - name: check if file/folder exists
+     stat:
+       path: "/root/pvcinstall/{{ item }}"
+     register: inst_check_file
+     with_items:
+       - "powervc-install-x86-rhel-9.9.9.9.MD5"
+       - "powervc-install-x86-rhel-9.9.9.9.tgz"
+
+   - debug: var=inst_check_file
+
+   - name: download the PVC installer
+     get_url:
+       url: "http://pokgsa.ibm.com/projects/p/powervc/build/release/powervc-trunk-python2-build/20200415-2250/{{ item.item }}" 
+       dest: /root/pvcinstall
+     with_items: "{{ inst_check_file.results }}"
+     when: item.stat.exists == false
+
+   - name: check if file/folder exists
+     stat:
+       path: "{{ item }}"
+     register: inst_check_file
+     with_items:
+       - '/root/pvcinstall/powervc-install-x86-rhel-9.9.9.9.MD5'
+       - '/root/pvcinstall/powervc-install-x86-rhel-9.9.9.9.tgz'
+
+   - name: Set check files result
+     set_fact:
+       store_check_file: "{{ inst_check_file.results | map(attribute='stat.exists') | list }}"
+
+   - name: Set process to execute or not
+     set_fact:
+       is_downloaded: "{{ false if false in store_check_file else true }}"
+   - debug: msg="{{ is_downloaded }}"
+
+   - name: Check for downloaded file is there
+     fail:
+       msg: "PVC installation file download have some problem , please check and retry {{ inventory_hostname }}."
+     when: is_downloaded == false
+     
+   - name: Get the checksum
+     shell: cat /root/pvcinstall/powervc-install-x86-rhel-9.9.9.9.MD5
+     register: md5_checksum
+
+   - debug: msg="{{ md5_checksum.stdout }}"
+
+   - name: Get the Md5sum of downloaded installer
+     shell: md5sum /root/pvcinstall/powervc-install-x86-rhel-9.9.9.9.tgz | awk '{print $1}'
+     register: installer_checksum
+
+#     stat:
+#       path: /root/pvcinstall/powervc-install-x86-rhel-9.9.9.9.tgz
+#       checksum_algorithm: md5
+#       get_checksum: yes
+#     register: installer_checksum
+   
+   - debug: msg="{{ installer_checksum.stdout }}"
+
+   - name: Verify the downloaded installer package
+     fail:
+       msg: "Downloaded installer package may be corrupted, restart the installation again {{ inventory_hostname }}."
+     when: installer_checksum.stdout != md5_checksum.stdout
+#     when: installer_checksum.stat.checksum == md5_checksum.stdout
+
+   - name: Check for installation directory
+     stat: 
+       path: /root/pvcinstall/powervc-9.9.9.9
+     register: install_dir_untar
+
+   - name: Untar the installer when install_dir_untar doesn't exists
+     unarchive:
+       src: /root/pvcinstall/powervc-install-x86-rhel-9.9.9.9.tgz
+       dest: /root/pvcinstall
+       remote_src: yes
+     when: not install_dir_untar.stat.exists  
+
+   - name: Start the installation of PVC
+     shell: /root/pvcinstall/powervc-9.9.9.9/install -c firewall -s standard
+     register: pvc_install
+
+   - debug: msg="{{ pvc_install }}"  
+

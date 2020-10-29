@@ -1,0 +1,7 @@
+# ansible-generated
+
+
+[repo]
+a-pvc-ops-deployer ansible_host=9.53.170.254 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
+[builder]
+a-pvc-ops-deployer ansible_host=9.53.170.254 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true

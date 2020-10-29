@@ -1,0 +1,76 @@
+---
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Author: Marcelo Perazolo <mperazol@us.ibm.com>
+#---
+
+# OS-dependent settings
+
+repofile: "/etc/yum.repos.d/ibm-ftp3.repo"
+repouser: "mperazol@us.ibm.com"
+repopass: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          32313564343031636266616465353533613435353532616333626631333938333536613662396663
+          6562613431623063373766383231393961613939626233620a373730343935326261633665623561
+          65383432613431383339356634343531356239363763666636306332613363636335333061383666
+          3239656666373162660a356365643636303831343834396261333830356636313134643461316565
+          3861
+repohost: "ftp3.linux.ibm.com"
+repoarch: "x86_64"
+repotype: "server"
+repovers: "7"
+
+# Subscription variables
+
+certificate_url: "http://ltc-rhs76.rtp.raleigh.ibm.com/pub/katello-ca-consumer-latest.noarch.rpm"
+certificate: "katello-ca-consumer-ltc-rhs76.rtp.raleigh.ibm.com"
+
+# to get your registration_key:
+# curl -ks https://ftp3.rchland.ibm.com/rpc/index.php
+# -H "Content-Type: text/xml"
+# -d "<?xml version='1.0' encoding='UTF-8'?><methodCall>
+#   <methodName>user.create_activation_key</methodName>
+#   <params>
+#     <param><value>your_user_id_replace@by%40</value></param>
+#     <param><value>your_password</value></param>
+#   </params></methodCall>"
+registration_key: "mperazol@us.ibm.com_2020-04-14_16_39_20"
+
+repos:
+  - "rhel-{{ ansible_distribution_major_version }}-{{ repo_arch }}-baseos-rpms"
+  - "rhel-{{ ansible_distribution_major_version }}-{{ repo_arch }}-appstream-rpms"
+  - "rhel-{{ ansible_distribution_major_version }}-{{ repo_arch }}-supplementary-rpms"
+
+extra_repos:
+  - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm"
+
+# Installation variables
+
+packages:
+  - "python3"
+  - "python3-setuptools"
+  - "python3-pip"
+  - "rsync"
+  - "sshpass"
+  - "git"
+
+mypassword: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38373439333461636663626461303636306130353766663631393235306134356361313635653666
+          3965383135653462343438613232303065303865363931630a643364613362303339666233326533
+          33313661613764343766656462666161313062656362346265326432356266366633666534326230
+          3331643935363063630a616639353261323262336265613366613664386335306137643734383931
+          6136
+
+sshdir: "~/.ssh"
+
