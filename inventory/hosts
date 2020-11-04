@@ -1,7 +1,13 @@
 # ansible-generated
 
 
+[endpoint]
+a-pvc-ops-endpoint-1 ansible_host=9.53.169.70 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
+a-pvc-ops-endpoint-2 ansible_host=9.53.170.254 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
 [repo]
-a-pvc-ops-deployer ansible_host=9.53.170.254 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
+a-pvc-ops-deployer ansible_host=9.53.169.69 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
 [builder]
-a-pvc-ops-deployer ansible_host=9.53.170.254 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
+a-pvc-ops-deployer ansible_host=9.53.169.69 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
+[controller]
+a-pvc-ops-controller-1 ansible_host=9.53.170.118 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true
+a-pvc-ops-controller-2 ansible_host=9.53.170.242 ansible_ssh_user=cloud-user ansible_python_interpreter=/usr/bin/python3 ansible_os_family=RedHat generated=true

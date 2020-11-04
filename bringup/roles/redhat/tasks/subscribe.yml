@@ -14,50 +14,50 @@
 # Author: Marcelo Perazolo <mperazol@us.ibm.com>
 #---
 
-    - name: install certificate
-      shell: rpm -q "{{ certificate }}" || rpm -Uv "{{ certificate_url }}" warn=False
+    - name: encode userid
+      shell: echo {{ repouser }} | sed 's/@/%40/g'
+      register: userout
 
-    - name: subscription config
-      command: subscription-manager config
+    - set_fact:
+        repouserencd: "{{ userout.stdout }}"
 
-    - name: subscription register
-      command: subscription-manager register --org Default_Organization --activationkey="{{ registration_key }}" --force
-      register: subres
-      until: subres is success
-      retries: 5
-      delay: 2
+    - name: encode password
+      shell: echo -n {{ repopass }} | od -tx1 -An | tr -d '\n' | sed 's/ /%/g'
+      register: passout
 
-#    - name: disable all existing repos
-#      command: subscription-manager repos --disable="*"
-
-    - debug:
-        var: ansible_architecture
+    - set_fact:
+        repopassencd: "{{ passout.stdout }}"
 
     - name: check machine arch to determine repo names
       set_fact:
-        repo_arch: "{{ target.label }}"
+        repotype: "{{ target.label }}"
       when: (ansible_architecture == target.arch) and (repo_arch is not defined)
       loop:
-        - { arch: 'x86_64',  label: 'for-x86_64' }
-        - { arch: 'ppc64le', label: 'for-power-le' }
+        - { arch: 'x86_64',  label: 'server' }
+        - { arch: 'ppc64le', label: 'power-le' }
       loop_control:
         loop_var: target
         label: "{{ target.arch }}"
 
-    - name: enable rhel repos
-      command: subscription-manager repos --enable="{{ repo }}"
-      when: repo_arch is defined
-      loop: "{{ repos }}"
-      loop_control:
-        loop_var: repo
-        label: "{{ repo }}"
+    - name: create repo file
+      template:
+        src: "repo.j2"
+        dest: "{{ repofile }}"
+        owner: "root"
+        group: "root"
+        mode: 0640
+        backup: yes
+
+    - name: clean old subscription
+      shell: "subscription-manager unregister || true"
 
     - name: install extra repos
       yum:
         name: "{{ extra }}"
         state: present
-      when: repo_arch is defined
       loop: "{{ extra_repos }}"
       loop_control:
         loop_var: extra
         label: "{{ extra }}"
+
+     
