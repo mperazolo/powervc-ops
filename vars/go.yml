@@ -16,7 +16,7 @@
 
 go_dir: "{{ bld_dir }}/go"
 go_url: "https://storage.googleapis.com/golang"
-go_version: 1.11.9
+go_version: 1.15.5
 go_file: "go{{ go_version }}.linux-ppc64le.tar.gz"
 
 god_dir: "{{ bld_dir }}/go-daemon"

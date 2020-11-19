@@ -58,7 +58,7 @@
 
 - name: copy beat binary into rpm package
   copy:
-    src: "{{ beats_dir }}/src/github.com/elastic/beats/{{ beat }}/{{ beat }}"
+    src: "{{ out_dir }}/{{ beat }}"
     dest: "{{ bld_dir }}/rpm/{{ beat }}/BUILDROOT/{{ beat }}-{{ beats_version }}-1.ppc64le/usr/share/{{ beat }}/bin/{{ beat }}"
     remote_src: True
     mode: 0755

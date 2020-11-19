@@ -34,7 +34,7 @@
         label: "{{ host }}"
 
     - name: configure root user
-      include_tasks: "set_user.yml"
+      include_tasks: "user.yml"
       vars:
         username: "root"
         groupname: "root"
@@ -58,13 +58,4 @@
 
     - name: redhat subscribe
       include_tasks: subscribe.yml
-
-    - name: install packages
-      package:
-        name: "{{ packages }}"
-        update_cache: yes
-      register: result
-      retries: 5
-      delay: 5
-      until: result is succeeded
 

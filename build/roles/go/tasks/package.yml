@@ -16,10 +16,10 @@
 
 - name: verify if go-daemon exists
   stat:
-    path: "{{ god_dir }}/god-{{ binary_suffix }}"
+    path: "{{ god_dir }}/src/god-{{ binary_suffix }}"
   register: god_out
 
 - name: move go-daemon to output dir
-  command: "mv {{ god_dir }}/god-{{ binary_suffix }} {{ out_dir }}/"
+  command: "mv {{ god_dir }}/src/god-{{ binary_suffix }} {{ out_dir }}/"
   when: god_out.stat.exists
 

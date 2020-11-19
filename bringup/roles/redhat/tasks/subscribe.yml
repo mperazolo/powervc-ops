@@ -51,13 +51,4 @@
     - name: clean old subscription
       shell: "subscription-manager unregister || true"
 
-    - name: install extra repos
-      yum:
-        name: "{{ extra }}"
-        state: present
-      loop: "{{ extra_repos }}"
-      loop_control:
-        loop_var: extra
-        label: "{{ extra }}"
-
      

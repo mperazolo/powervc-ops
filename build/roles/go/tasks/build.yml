@@ -53,5 +53,5 @@
 - name: build go-daemon
   command: "{{ god_cmd }}"
   args:
-    chdir: "{{ god_dir }}"
+    chdir: "{{ god_dir }}/src"
     creates: "{{ god_dir }}/god-{{ binary_suffix }}"
