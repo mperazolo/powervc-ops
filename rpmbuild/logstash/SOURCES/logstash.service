@@ -10,7 +10,7 @@ Group=logstash
 # exist, it continues onward.
 EnvironmentFile=-/etc/default/logstash
 EnvironmentFile=-/etc/sysconfig/logstash
-ExecStart=/usr/share/logstash-7.9.3/bin/logstash "--path.settings" "/etc/logstash/"
+ExecStart=/usr/share/logstash/bin/logstash "--path.settings" "/etc/logstash/"
 Restart=always
 WorkingDirectory=/
 Nice=19
