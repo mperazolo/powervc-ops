@@ -1,0 +1,47 @@
+--- build.gradle	2021-01-27 15:09:09.175850439 -0500
++++ build.gradle.new	2021-01-27 15:28:31.565848514 -0500
+@@ -531,6 +531,25 @@
+     }
+ }
+ 
++def selectArch() {
++    if (project.ext.has("jdk_arch")) {
++        return project.ext.jdk_arch
++    }
++    String cpu_arch = System.properties["os.arch"]
++    switch (cpu_arch) {
++        case "amd64":
++        case "x86_64":
++            return "x86_64"
++        case "aarch64":
++        case "arm64":
++            return "arm64"
++        case "ppc64le":
++            return "ppc64le"
++        default:
++            throw new IllegalArgumentException("Can't handle os.arch of type $cpu_arch")
++    }
++}
++
+ class JDKDetails {
+     final String revision
+     final String build
+@@ -588,6 +607,9 @@
+             case "arm64":
+                 return "aarch64"
+                 break
++            case "ppc64le":
++                return "ppc64le"
++                break
+             default:
+                 throw RuntimeException("Can't handle CPU architechture: ${jdkArch}")
+         }
+@@ -601,7 +623,7 @@
+     String osName = selectOsType()
+ 
+     def versionYml = new Yaml().load(new File("$projectDir/versions.yml").text)
+-    String jdkArch = project.ext.jdk_arch
++    String jdkArch = selectArch()
+     def jdkDetails = new JDKDetails(versionYml, osName, jdkArch)
+ 
+     description "Download JDK ${jdkDetails.major}, OS: ${osName}"
