@@ -1,5 +1,6 @@
---- build.gradle	2021-01-27 15:09:09.175850439 -0500
-+++ build.gradle.new	2021-01-27 15:28:31.565848514 -0500
+diff -ruN ../logstash.old/build.gradle ./build.gradle
+--- ../logstash.old/build.gradle	2021-02-04 14:33:01.603528406 -0500
++++ ./build.gradle	2021-02-04 14:34:31.188294389 -0500
 @@ -531,6 +531,25 @@
      }
  }
@@ -45,3 +46,30 @@
      def jdkDetails = new JDKDetails(versionYml, osName, jdkArch)
  
      description "Download JDK ${jdkDetails.major}, OS: ${osName}"
+diff -ruN ../logstash.old/rakelib/artifacts.rake ./rakelib/artifacts.rake
+--- ../logstash.old/rakelib/artifacts.rake	2021-02-04 14:33:01.593527873 -0500
++++ ./rakelib/artifacts.rake	2021-02-04 14:35:26.501202559 -0500
+@@ -206,8 +206,12 @@
+     puts("[artifact:rpm] building rpm OSS package x86_64")
+     package_with_jdk("centos", "x86_64", :oss)
+ 
+-    puts("[artifact:rpm] building rpm OSS package arm64")
+-    package_with_jdk("centos", "arm64", :oss)
++    #comment out arm64 packaging to speed things up
++    #puts("[artifact:rpm] building rpm OSS package arm64")
++    #package_with_jdk("centos", "arm64", :oss)
++
++    puts("[artifact:rpm] building rpm OSS package ppc64le")
++    package_with_jdk("centos", "ppc64le", :oss)
+ 
+     #without JDKs
+     system("./gradlew bootstrap") #force the build of Logstash jars
+@@ -688,6 +692,8 @@
+         else
+           return "aarch64"
+       end
++    elsif jdk_arch == 'ppc64le'
++      return "ppc64le"
+     else
+       raise "CPU architecture not recognized: #{jdk_arch}"
+     end
