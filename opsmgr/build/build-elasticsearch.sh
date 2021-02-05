@@ -5,10 +5,12 @@ JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print $3 }'`
 PATCHES_PATH="$SCRIPT_PATH/patches"
 VERSION="7.10.2"
 
+ARTIFACTS_PATH="$SCRIPT_PATH/distribution/packages"
+PREFIX="elasticsearch-oss-$VERSION"
 ARTIFACTS=(
-  "$SCRIPT_PATH/distribution/packages/oss-no-jdk-rpm/build/distributions/elasticsearch-oss-$VERSION-SNAPSHOT-no-jdk-x86_64.rpm","deps-noarch-cache"
-  "$SCRIPT_PATH/distribution/packages/oss-rpm/build/distributions/elasticsearch-oss-$VERSION-SNAPSHOT-x86_64.rpm","deps-x86-cache"
-  "$SCRIPT_PATH/distribution/packages/ppc64le-oss-rpm/build/distributions/elasticsearch-oss-$VERSION-SNAPSHOT-ppc64le.rpm","deps-ppc64le-cache"
+  "$ARTIFACTS_PATH/oss-no-jdk-rpm/build/distributions/$PREFIX-SNAPSHOT-no-jdk-x86_64.rpm","deps-noarch-cache","$PREFIX.ibm.el8.noarch.rpm"
+  "$ARTIFACTS_PATH/oss-rpm/build/distributions/$PREFIX-SNAPSHOT-x86_64.rpm","deps-x86-cache","$PREFIX.ibm.el8.x86_64.rpm"
+  "$ARTIFACTS_PATH/ppc64le-oss-rpm/build/distributions/$PREFIX-SNAPSHOT-ppc64le.rpm","deps-ppc64le-cache","$PREFIX.ibm.el8.ppc64le.rpm"
 )
 
 OUTPUT_PATH="/gsa/pokgsa/projects/p/posee/pvcos-build/pvcos-wallaby"
@@ -32,7 +34,8 @@ IFS=","
 for i in "${ARTIFACTS[@]}"
 do
   set -- $i
-  echo Copying $1 to $OUTPUT_PATH/$2
-  \cp $1 $OUTPUT_PATH/$2
+  echo Copying $1 to $OUTPUT_PATH/$2/$3
+  mkdir -p $OUTPUT_PATH/$2
+  \cp $1 $OUTPUT_PATH/$2/$3
 done
 

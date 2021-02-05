@@ -9,10 +9,12 @@ KEYS_PATH="$SCRIPT_PATH/keys"
 RUBY="jruby-9.2.9.0"
 VERSION="7.10.2"
 
+ARTIFACTS_PATH="$SCRIPT_PATH/logstash/build"
+PREFIX="logstash-oss-$VERSION"
 ARTIFACTS=(
-  "$SCRIPT_PATH/logstash/build/logstash-oss-$VERSION-SNAPSHOT-no-jdk.rpm","deps-noarch-cache"
-  "$SCRIPT_PATH/logstash/build/logstash-oss-$VERSION-SNAPSHOT-x86_64.rpm","deps-x86-cache"
-  "$SCRIPT_PATH/logstash/build/logstash-oss-$VERSION-SNAPSHOT-ppc64le.rpm","deps-ppc64le-cache"
+  "$ARTIFACTS_PATH/$PREFIX-SNAPSHOT-no-jdk.rpm","deps-noarch-cache","$PREFIX.ibm.el8.noarch.rpm"
+  "$ARTIFACTS_PATH/$PREFIX-SNAPSHOT-x86_64.rpm","deps-x86-cache","$PREFIX.ibm.el8.x86_64.rpm"
+  "$ARTIFACTS_PATH/$PREFIX-SNAPSHOT-ppc64le.rpm","deps-ppc64le-cache","$PREFIX.ibm.el8.ppc64le.rpm"
 )
 
 OUTPUT_PATH="/gsa/pokgsa/projects/p/posee/pvcos-build/pvcos-wallaby"
@@ -45,7 +47,8 @@ IFS=","
 for i in "${ARTIFACTS[@]}"
 do
   set -- $i
-  echo Copying $1 to $OUTPUT_PATH/$2
-  \cp $1 $OUTPUT_PATH/$2
+  echo Copying $1 to $OUTPUT_PATH/$2/$3
+  mkdir -p $OUTPUT_PATH/$2
+  \cp $1 $OUTPUT_PATH/$2/$3
 done
 
