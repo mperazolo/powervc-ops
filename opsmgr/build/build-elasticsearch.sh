@@ -6,7 +6,7 @@ VERSION="7.10.2"
 
 export JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print $3 }'`
 
-ARTIFACTS_PATH="$SCRIPT_PATH/distribution/packages"
+ARTIFACTS_PATH="$SCRIPT_PATH/elasticsearch/distribution/packages"
 PREFIX="elasticsearch-oss-$VERSION"
 ARTIFACTS=(
   "$ARTIFACTS_PATH/oss-no-jdk-rpm/build/distributions/$PREFIX-SNAPSHOT-no-jdk-x86_64.rpm","deps-noarch-cache","$PREFIX.ibm.el8.noarch.rpm"
