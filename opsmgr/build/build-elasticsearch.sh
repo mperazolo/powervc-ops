@@ -1,9 +1,10 @@
 #!/bin/bash
 
 SCRIPT_PATH="$( cd $( dirname ${BASH_SOURCE[0]} ) >/dev/null 2>&1 && pwd )"
-JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print $3 }'`
 PATCHES_PATH="$SCRIPT_PATH/patches"
 VERSION="7.10.2"
+
+export JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print $3 }'`
 
 ARTIFACTS_PATH="$SCRIPT_PATH/distribution/packages"
 PREFIX="elasticsearch-oss-$VERSION"

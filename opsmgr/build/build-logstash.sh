@@ -1,13 +1,14 @@
 #!/bin/bash
 
 SCRIPT_PATH="$( cd $( dirname ${BASH_SOURCE[0]} ) >/dev/null 2>&1 && pwd )"
-JAVA_HOME=`alternatives --list | grep java_sdk_1.8.0_openjdk | awk '{ print $3 }'`
-OSS=true
-LOGSTASH_SOURCE=1
 PATCHES_PATH="$SCRIPT_PATH/patches"
 KEYS_PATH="$SCRIPT_PATH/keys"
 RUBY="jruby-9.2.9.0"
 VERSION="7.10.2"
+
+export JAVA_HOME=`alternatives --list | grep java_sdk_1.8.0_openjdk | awk '{ print $3 }'`
+export OSS=true
+export LOGSTASH_SOURCE=1
 
 ARTIFACTS_PATH="$SCRIPT_PATH/logstash/build"
 PREFIX="logstash-oss-$VERSION"
