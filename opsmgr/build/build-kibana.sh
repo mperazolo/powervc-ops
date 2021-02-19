@@ -8,7 +8,7 @@ if [ `id -u` == 0 ]; then
     useradd kibana
   fi
   mkdir -p $EXEC_PATH
-  cp -R ./ $EXEC_PATH 
+  cp -R $SCRIPT_PATH/* $EXEC_PATH 
   chown -R kibana.kibana $EXEC_PATH 
   su -s /bin/bash -c "cd $EXEC_PATH; ./build-kibana.sh" - kibana
   userdel -r kibana
