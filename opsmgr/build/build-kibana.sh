@@ -1,10 +1,24 @@
 #!/bin/bash
 
 SCRIPT_PATH="$( cd $( dirname ${BASH_SOURCE[0]} ) >/dev/null 2>&1 && pwd )"
-PATCHES_PATH="$SCRIPT_PATH/patches"
+EXEC_PATH="/home/kibana/rpmbuild-elastic"
+
+if [ `id -u` == 0 ]; then
+  if [ ! $( id -u kibana 2>/dev/null ) ]; then
+    useradd kibana
+  fi
+  mkdir -p $EXEC_PATH
+  cp -R ./ $EXEC_PATH 
+  chown -R kibana.kibana $EXEC_PATH 
+  su -s /bin/bash -c "cd $EXEC_PATH; ./build-kibana.sh" - kibana
+  userdel -r kibana
+  exit 0
+fi
+
+PATCHES_PATH="$EXEC_PATH/patches"
 VERSION="7.10.2"
 
-ARTIFACTS_PATH="$SCRIPT_PATH/kibana/target"
+ARTIFACTS_PATH="$EXEC_PATH/kibana/target"
 PREFIX="kibana-oss-$VERSION"
 ARTIFACTS=(
   "$ARTIFACTS_PATH/$PREFIX-SNAPSHOT-x86_64.rpm","deps-x86-cache","$PREFIX.ibm.el8.x86_64.rpm"
@@ -17,13 +31,13 @@ if [ ! -d "${OUTPUT_PATH}" ]; then
   mkdir -p $OUTPUT_PATH
 fi
 
-cd $SCRIPT_PATH # make sure we're in the right directory
+cd $EXEC_PATH # make sure we're in the right directory
 git clone https://github.com/elastic/kibana.git
 cd kibana
 git checkout v$VERSION
 patch -s -p0 < $PATCHES_PATH/kibana-$VERSION.patch
 
-cd $SCRIPT_PATH
+cd $EXEC_PATH
 NODEVERS="v`cat kibana/.node-version`"
 NODEARCH=`uname -m`
 NODEFILE=""
@@ -39,14 +53,14 @@ wget https://nodejs.org/dist/${NODEVERS}/${NODEFILE}.tar.gz
 tar xzf ${NODEFILE}.tar.gz
 rm -f ${NODEFILE}.tar.gz
 mv -f ${NODEFILE} node
-export NODEJS_HOME=`pwd`/node/bin
+export NODEJS_HOME=$EXEC_PATH/node/bin
 export JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print $3 }'`
 export PATH=$NODEJS_HOME:$JAVA_HOME/bin:$PATH
 
 cd kibana
 npm install --global yarn
 gem install fpm -v 1.5.0
-yarn kbn bootstrap
+yarn kbn bootstrap --oss
 yarn build --oss --rpm --skip-archives
 
 IFS=","
