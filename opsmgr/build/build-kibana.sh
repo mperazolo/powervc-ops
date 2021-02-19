@@ -60,8 +60,9 @@ export JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print 
 export PATH=$NODEJS_HOME:$JAVA_HOME/bin:$PATH
 
 cd kibana
+
 KEYS_PATH=$EXEC_PATH/keys
-RUBY="2.1.0"
+RUBY="2.7"
 echo $RUBY > .ruby-version
 gpg --import $KEYS_PATH/409B6B1796C275462A1703113804BB82D39DC0E3.key
 gpg --import $KEYS_PATH/7D2BAF1CF37B13E2069D6956105BD0E739499BDB.key
@@ -72,7 +73,6 @@ else
   source /usr/local/rvm/scripts/rvm
 fi
 
-gem install --no-document childprocess -v 1.0.1
 gem install --no-document fpm -v 1.5.0
 npm install --global yarn
 yarn kbn bootstrap --oss
