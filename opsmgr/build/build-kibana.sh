@@ -61,6 +61,7 @@ export PATH=$NODEJS_HOME:$JAVA_HOME/bin:$PATH
 
 cd kibana
 npm install --global yarn
+gem install childprocess -v 1.0.1
 gem install fpm -v 1.5.0
 yarn kbn bootstrap --oss
 yarn build --oss --rpm --skip-archives
