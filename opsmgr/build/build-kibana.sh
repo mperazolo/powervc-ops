@@ -7,6 +7,8 @@ if [ `id -u` == 0 ]; then
   if [ ! $( id -u kibana 2>/dev/null ) ]; then
     useradd kibana
   fi
+  LINE="kibana ALL=(ALL:ALL) NOPASSWD:ALL"
+  grep -qF -- "$LINE" /etc/sudoers || echo "$LINE" >> /etc/sudoers
   mkdir -p $EXEC_PATH
   cp -R $SCRIPT_PATH/* $EXEC_PATH 
   chown -R kibana.kibana $EXEC_PATH 
@@ -68,7 +70,7 @@ for i in "${ARTIFACTS[@]}"
 do
   set -- $i
   echo Copying $1 to $OUTPUT_PATH/$2/$3
-  mkdir -p $OUTPUT_PATH/$2
-  \cp $1 $OUTPUT_PATH/$2/$3
+  sudo mkdir -p $OUTPUT_PATH/$2
+  sudo \cp $1 $OUTPUT_PATH/$2/$3
 done
 
