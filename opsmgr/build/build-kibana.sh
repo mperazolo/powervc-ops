@@ -13,6 +13,7 @@ if [ `id -u` == 0 ]; then
   cp -R $SCRIPT_PATH/* $EXEC_PATH 
   chown -R kibana.kibana $EXEC_PATH 
   su -s /bin/bash -c "cd $EXEC_PATH; ./build-kibana.sh" - kibana
+  pkill -u kibana
   userdel -r kibana
   exit 0
 fi
