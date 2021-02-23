@@ -88,6 +88,7 @@ cd $BEATSDIR/SPECS
 rpmrebuild --notest-install --package --spec-only=$MYSPEC $X86RPM
 sed -i 's/x86_64/ppc64le/g' $MYSPEC
 sed -i 's/x86-64/ppc-64/g' $MYSPEC
+sed -i '/buildarch/Id' $MYSPEC
 
 cd $SPECPATH/usr/share/filebeat/bin
 \cp $GOPATH/src/github.com/elastic/beats/filebeat/filebeat .
@@ -95,7 +96,7 @@ cd $SPECPATH/usr/share/filebeat/bin
 chmod 0755 ./*
 
 cd $BEATSDIR
-rpmbuild --define "_topdir $BEATSDIR" -bb $MYSPEC
+rpmbuild --define "_topdir $BEATSDIR" -bb "$MYSPEC" --target "ppc64le"
 mv $BEATSDIR/RPMS/ppc64le/$SPECNAME.ppc64le.rpm $PPCRPM
 
 IFS=","
