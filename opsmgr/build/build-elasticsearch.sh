@@ -13,7 +13,7 @@ export JAVA_HOME=`alternatives --list | grep java_sdk_11_openjdk | awk '{ print 
 
 if [ `id -u` == 0 ]; then
   EXEC_PATH="/home/${PROJECT}/rpmbuild-elastic"
-  if [ ! $( id -u kibana 2>/dev/null ) ]; then
+  if [ ! $( id -u ${PROJECT} 2>/dev/null ) ]; then
     useradd ${PROJECT}
   fi
   LINE="${PROJECT} ALL=(ALL:ALL) NOPASSWD:ALL"
@@ -21,7 +21,7 @@ if [ `id -u` == 0 ]; then
   mkdir -p ${EXEC_PATH}
   cp -R ${SCRIPT_PATH}/* ${EXEC_PATH}
   chown -R ${PROJECT}.${PROJECT} ${EXEC_PATH}
-  su -s /bin/bash -c "cd ${EXEC_PATH}; ./build-${PROJECT}.sh" - kibana
+  su -s /bin/bash -c "cd ${EXEC_PATH}; ./build-${PROJECT}.sh" - ${PROJECT}
   GSA_PATH="/gsa/pokgsa/projects/p/posee/pvcos-build/pvcos-wallaby"
   if [ -d "${GSA_PATH}" ]; then
     echo "Copying build output to ${GSA_PATH}"
